@@ -1,64 +1,51 @@
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class SimplePlayerMovement : MonoBehaviour
 {
     public CharacterController controller;
-    public float speed = 6f;
-    public float gravity = -20f; // Gravidade mais firme para o 3D
-    public float jumpHeight = 2f;
 
-    public Transform groundCheck;
-    public float groundDistance = 0.6f;
-    public LayerMask groundMask;
+    public float speed = 6f;
+    public float gravity = -20f;
+    public float jumpHeight = 1.5f;
 
     private Vector3 velocity;
-    private bool isGrounded;
+
+    void Start()
+    {
+        if (controller == null)
+        {
+            controller = GetComponent<CharacterController>();
+        }
+    }
 
     void Update()
     {
-        // Checagem se encostou no chão
-        if (groundCheck != null)
-        {
-            isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
-        }
-
-        // Se estiver no chão, zera o acúmulo da gravidade
-        if (isGrounded && velocity.y < 0)
+        // Reseta gravidade quando toca o chão
+        if (controller.isGrounded && velocity.y < 0)
         {
             velocity.y = -2f;
         }
 
-        // Entrada do teclado (WASD / Setas)
-        float x = Input.GetAxisRaw("Horizontal");
-        float z = Input.GetAxisRaw("Vertical");
+        // Inverte a leitura dos eixos com '-' para alinhar com a visão da câmera
+        float inputX = -Input.GetAxisRaw("Horizontal");
+        float inputZ = -Input.GetAxisRaw("Vertical");
 
-        Vector3 move = new Vector3(x, 0f, z).normalized;
+        // Movimento ajustado à visão
+        Vector3 direction = new Vector3(inputX, 0f, inputZ).normalized;
 
-        if (move.magnitude >= 0.1f)
+        if (direction.magnitude >= 0.1f)
         {
-            // Faz o boneco olhar para a direção em que anda
-            transform.forward = move;
-            controller.Move(move * speed * Time.deltaTime);
+            controller.Move(direction * speed * Time.deltaTime);
         }
 
-        // Pulo no Espaço
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        // Pulo na tecla Espaço
+        if (Input.GetButtonDown("Jump") && controller.isGrounded)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
 
-        // Aplica gravidade contínua
+        // Gravidade contínua
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
-    }
-
-    // Desenha a esfera no editor para você ver a detecção do chão
-    private void OnDrawGizmosSelected()
-    {
-        if (groundCheck != null)
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(groundCheck.position, groundDistance);
-        }
     }
 }
