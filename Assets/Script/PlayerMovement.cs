@@ -2,69 +2,66 @@ using UnityEngine;
 
 public class SimplePlayerMovement : MonoBehaviour
 {
-    [Header("Referências")]
-    public CharacterController controller;
+    // COMPONENTES E CONFIGURAÇÕES
+    public CharacterController controller; // Componente que move e trata colisões do personagem
+    public float speed = 6f;               // Velocidade de caminhada
+    public float jumpForce = 8f;           // Força aplicada ao pular
+    public float gravityScale = 1.5f;      // Multiplicador de gravidade (queda mais rápida/lenta)
 
-    [Header("Movimento")]
-    public float speed = 6f;
-    public float groundDrag = 0.1f;
-
-    [Header("Pulo")]
-    public float jumpForce = 5f;
-    public float gravityScale = 2f;
-
-    private Vector3 velocity = Vector3.zero;
-    private float gravity = -9.81f;
+    // VARIÁVEIS INTERNAS DE FÍSICA E CONTROLE
+    private Vector3 velocity = Vector3.zero; // Guarda a velocidade vertical (pulo/queda)
+    private float gravity = -9.81f;          // Gravidade base
+    private bool jumpPressed = false;        // Trava para controlar o pulo
 
     void Start()
     {
+        // Se o controller não foi arrastado no Inspector, busca no próprio objeto
         if (controller == null)
-        {
             controller = GetComponent<CharacterController>();
-        }
     }
 
     void Update()
     {
-        // ============ ENTRADA ============
-        float inputX = -Input.GetAxisRaw("Horizontal");
-        float inputZ = -Input.GetAxisRaw("Vertical");
-
-        // ============ MOVIMENTO HORIZONTAL ============
-        Vector3 direction = new Vector3(inputX, 0f, inputZ).normalized;
+        // 1. LEITURA DE ENTRADA E DIREÇÃO (WASD / Setas)
+        float inputX = -Input.GetAxisRaw("Horizontal"); // Inverte eixo X
+        float inputZ = -Input.GetAxisRaw("Vertical");   // Inverte eixo Z
+        Vector3 direction = new Vector3(inputX, 0f, inputZ).normalized; // Normaliza para não andar rápido na diagonal
         Vector3 moveDirection = direction * speed;
 
-        // Aplica drag quando está no chão
+        // Reduz levemente a velocidade no chão para não deslizar
         if (controller.isGrounded)
-        {
-            moveDirection *= (1f - groundDrag);
-        }
+            moveDirection *= 0.9f;
 
-        // ============ PULO ============
-        if (Input.GetButtonDown("Jump") && controller.isGrounded)
+        // 2. LÓGICA DO PULO
+        // Pula se apertar Espaço, estiver tocando o chão e não tiver pulado ainda
+        if (Input.GetButtonDown("Jump") && controller.isGrounded && !jumpPressed)
         {
             velocity.y = jumpForce;
+            jumpPressed = true;
         }
 
-        // ============ GRAVIDADE ============
+        // Reseta o controle de pulo ao encostar no chão
+        if (controller.isGrounded)
+            jumpPressed = false;
+
+        // 3. APLICAÇÃO DA GRAVIDADE
         if (controller.isGrounded)
         {
-            // Quando toca o chão, mantém no chão (sem forçar pra baixo)
+            // No chão: zera a velocidade de queda
             if (velocity.y < 0)
-            {
                 velocity.y = 0f;
-            }
         }
         else
         {
-            // Quando está no ar, aplica gravidade
+            // No ar: acelera a queda a cada frame
             velocity.y += gravity * gravityScale * Time.deltaTime;
         }
 
-        // Limita velocidade de queda máxima
+        // Limita a velocidade máxima de queda em -20
         velocity.y = Mathf.Max(velocity.y, -20f);
 
-        // ============ APLICA MOVIMENTO ============
+        // 4. MOVIMENTAÇÃO FINAL
+        // Une o movimento horizontal (X, Z) com a gravidade/pulo (Y) ajustado pelo tempo de quadros (FPS)
         Vector3 finalMovement = new Vector3(moveDirection.x, velocity.y, moveDirection.z);
         controller.Move(finalMovement * Time.deltaTime);
     }
