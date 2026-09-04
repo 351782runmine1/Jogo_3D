@@ -416,7 +416,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!23 &477310811
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -707,10 +707,10 @@ PrefabInstance:
       addedObject: {fileID: 1481874937}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1171ec5a6041d1241a4e45caef0152fe, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1481874939}
+      addedObject: {fileID: 1481874940}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1171ec5a6041d1241a4e45caef0152fe, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1481874940}
+      addedObject: {fileID: 1481874942}
   m_SourcePrefab: {fileID: 100100000, guid: 1171ec5a6041d1241a4e45caef0152fe, type: 3}
 --- !u!1 &963313506
 GameObject:
@@ -954,26 +954,10 @@ CharacterController:
   m_Height: 2
   m_Radius: 0.5
   m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
+  m_StepOffset: 0.1
+  m_SkinWidth: 0.01
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &1481874939
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1481874935}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a676e671b5b9cc4092b876b4ff1e6f1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  controller: {fileID: 1481874937}
-  speed: 6
-  gravity: -20
-  jumpHeight: 1.5
+  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!65 &1481874940
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -995,6 +979,23 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 4, y: 4, z: 4}
   m_Center: {x: 0, y: 4, z: 0}
+--- !u!114 &1481874942
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1481874935}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a676e671b5b9cc4092b876b4ff1e6f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controller: {fileID: 1481874937}
+  speed: 6
+  groundDrag: 0.1
+  jumpForce: 5
+  gravityScale: 2
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
