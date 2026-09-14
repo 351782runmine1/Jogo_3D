@@ -11,7 +11,7 @@ public class CameraOrbit : MonoBehaviour
     public bool primeiraPessoa = false;
 
     [Header("Terceira Pessoa")]
-    public float distancia3P = 4.0f;
+    public float distancia3P = 10.0f;
     public float altura3P = 1.8f;
     public float limiteMin3P = -20f;
     public float limiteMax3P = 50f;
