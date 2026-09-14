@@ -3,8 +3,11 @@ using UnityEngine;
 public class MovePlayer : MonoBehaviour
 {
     [Header("Movimento")]
-    public float velocidade = 5;
+    public float velocidade = 5f;
     public float forcaPulo = 6f;
+
+    [Header("Sensibilidade do Mouse")]
+    public float sensibilidadeMouse = 3f;
 
     private Rigidbody rb;
     private bool noChao;
@@ -14,11 +17,18 @@ public class MovePlayer : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
 
+        // Trava o cursor no centro da tela
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
-    // Update is called once per frame
     void Update()
     {
+        // MOUSE X gira o personagem no eixo Y
+        float giroHorizontal = Input.GetAxis("Mouse X") * sensibilidadeMouse;
+        transform.Rotate(0, giroHorizontal, 0);
+
+        // Pulo
         if (Input.GetButtonDown("Jump") && noChao)
         {
             rb.AddForce(Vector3.up * forcaPulo, ForceMode.Impulse);
@@ -27,13 +37,15 @@ public class MovePlayer : MonoBehaviour
 
     void FixedUpdate()
     {
-        float h = -Input.GetAxis("Horizontal");
-        float y = -Input.GetAxis("Vertical");
+        float h = Input.GetAxis("Horizontal");
+        float v = Input.GetAxis("Vertical");
 
-        Vector3 direcao = new Vector3(h, 0f, y) * velocidade;
-        direcao.y = rb.linearVelocity.y;
-        rb.linearVelocity = direcao;
+        // O (-) inverte a direcao para bater exatamente com o modelo 180°
+        Vector3 direcao = (-transform.forward * v - transform.right * h).normalized;
+        Vector3 velocidadeFinal = direcao * velocidade;
+        velocidadeFinal.y = rb.linearVelocity.y;
 
+        rb.linearVelocity = velocidadeFinal;
     }
 
     void OnCollisionStay(Collision collision)
@@ -51,6 +63,4 @@ public class MovePlayer : MonoBehaviour
             noChao = false;
         }
     }
-
-
 }
